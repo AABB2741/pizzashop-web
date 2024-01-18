@@ -20,7 +20,9 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 
-interface OrderDetailsProps {
+import { OrderDetailsSkeleton } from "./order-details-skeleton";
+
+export interface OrderDetailsProps {
 	orderId: string;
 	open: boolean;
 }
@@ -32,8 +34,6 @@ export function OrderDetails({ orderId, open }: OrderDetailsProps) {
 		enabled: open,
 	});
 
-	if (!order) return null;
-
 	return (
 		<DialogContent>
 			<DialogHeader>
@@ -41,7 +41,7 @@ export function OrderDetails({ orderId, open }: OrderDetailsProps) {
 				<DialogDescription>Detalhes do pedido</DialogDescription>
 			</DialogHeader>
 
-			{order && (
+			{order ? (
 				<div className="space-y-6">
 					<Table>
 						<TableBody>
@@ -102,56 +102,58 @@ export function OrderDetails({ orderId, open }: OrderDetailsProps) {
 									Preço
 								</TableHead>
 								<TableHead className="text-right">
-									Total
+									Subtotal
 								</TableHead>
 							</TableRow>
 						</TableHeader>
 						<TableBody>
-							{order.orderItems.map((item) => {
-								return (
-									<TableRow key={item.id}>
-										<TableCell>
-											{item.product.name}
-										</TableCell>
-										<TableCell className="text-right">
-											{item.quantity}
-										</TableCell>
-										<TableCell className="text-right">
-											{(
-												item.priceInCents / 100
-											).toLocaleString("pt-BR", {
-												style: "currency",
-												currency: "BRL",
-											})}
-										</TableCell>
-										<TableCell className="text-right">
-											{(
-												(item.priceInCents *
-													item.quantity) /
-												100
-											).toLocaleString("pt-BR", {
-												style: "currency",
-												currency: "BRL",
-											})}
-										</TableCell>
-									</TableRow>
-								);
-							})}
+							{order.orderItems.map((item) => (
+								<TableRow key={item.id}>
+									<TableCell>{item.product.name}</TableCell>
+									<TableCell className="text-right">
+										{item.quantity}
+									</TableCell>
+									<TableCell className="text-right">
+										{(
+											item.priceInCents / 100
+										).toLocaleString("pt-BR", {
+											style: "currency",
+											currency: "BRL",
+										})}
+									</TableCell>
+									<TableCell className="text-right">
+										{(
+											(item.priceInCents *
+												item.quantity) /
+											100
+										).toLocaleString("pt-BR", {
+											style: "currency",
+											currency: "BRL",
+										})}
+									</TableCell>
+								</TableRow>
+							))}
 						</TableBody>
 						<TableFooter>
-							<TableCell colSpan={3}>Total do pedido</TableCell>
-							<TableCell className="text-right font-medium">
-								{(order.totalInCents / 100).toLocaleString(
-									"pt-BR",
-									{
-										style: "currency",
-										currency: "BRL",
-									},
-								)}
-							</TableCell>
+							<TableRow>
+								<TableCell colSpan={3}>
+									Total do pedido
+								</TableCell>
+								<TableCell className="text-right font-medium">
+									{(order.totalInCents / 100).toLocaleString(
+										"pt-BR",
+										{
+											style: "currency",
+											currency: "BRL",
+										},
+									)}
+								</TableCell>
+							</TableRow>
 						</TableFooter>
 					</Table>
 				</div>
+			) : (
+				<OrderDetailsSkeleton />
 			)}
 		</DialogContent>
 	);
